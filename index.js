@@ -123,13 +123,18 @@ function app (state = {}, action) {
 const store = createStore(app);
 
 store.subscribe(() => {
-  console.log('The new state is: ', store.getState())
+  const { goals, todos } = store.getState()
+  document.getElementById('goals').innerHTML = ''
+  document.getElementById('todos').innerHTML = ''
+  goals.forEach(addGoalToDOM)
+  todos.forEach(addTodoToDOM)
 })
 
 function generateId () {
   return Math.random().toString(36).substring(2) + (new Date()).getTime().toString(36);
 }
 
+ // DOM code
 function addTodo () {
   const input = document.getElementById('todo')
   const name = input.value
@@ -149,6 +154,25 @@ function addGoal () {
     id: generateId(),
     name,
   }))
+}
+
+function addTodoToDOM (todo) {
+  const node = document.createElement('li')
+  const text = document.createTextNode(todo.name)
+  node.appendChild(text)
+  node.style.textDecoration = todo.complete ? 'line-through' : 'none'
+  node.addEventListener('click', () => {
+    store.dispatch(toggleTodoAction(todo.id))
+  })
+  document.getElementById('todos')
+    .appendChild(node)
+}
+function addGoalToDOM (goal) {
+  const node = document.createElement('li')
+  const text = document.createTextNode(goal.name)
+  node.appendChild(text)
+  document.getElementById('goals')
+    .append(node)
 }
 
 document.getElementById('todoBtn').addEventListener('click', addTodo)
