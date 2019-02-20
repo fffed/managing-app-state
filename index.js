@@ -1,42 +1,3 @@
-/* ____Library code____ */
-function createStore (reducer) {
-  // The store should have four parts
-  // 1. The state
-  // 2. Get the state.
-  // 3. Listen to changes on the state.
-  // 4. Update the state
-
-  /*1*/
-  let state
-  
-  /*2*/
-  const getState = () => state
-
-  /*3*/
-  let listeners = []
-
-  const subscribe = (listener) => {
-    listeners.push(listener)
-
-    return () => {
-      listeners = listeners.filter(l => l !== listener) // for unsuscribe
-    }
-  }
-
-  /*4*/
-  const dispatch = (action) => {
-    state = reducer(state, action)
-    listeners.forEach(listener => listener())
-  }
-
-  return {
-    getState,
-    subscribe,
-    dispatch
-  }
-}
-//-----------------------------------
-
 /***** App code *****/
 
 const ADD_TODO = 'ADD_TODO'
@@ -110,17 +71,7 @@ function goals (state = [], action) {
   }
 }
 
-// Combine reducers
-function app (state = {}, action) {
-  return {
-    todos: todos(state.todos, action),
-    goals: goals(state.goals, action),
-  }
-}
-
-
-//------------------------
-const store = createStore(app);
+const store = Redux.createStore(Redux.combineReducers({ todos, goals }))
 
 store.subscribe(() => {
   const { goals, todos } = store.getState()
